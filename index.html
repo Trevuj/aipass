@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signature Modal</title>
+  <style>
+    body {
+      background: url('https://img.freepik.com/premium-photo/abstract-blurred-sky-colorful_40299-22.jpg') no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+    .modal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 36px;
+      width: 380px;
+      height: 52px;
+      padding: 24px;
+      border-radius: 40px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%);
+      box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0);
+      transition: 0.4s ease height, 0.4s ease padding, 0.2s border-radius, 0.6s ease box-shadow;
+    }
+
+    .modal:hover {
+      box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.025);
+    }
+
+    .modal.active {
+      height: 160px;
+      padding: 32px;
+      border-radius: 48px;
+    }
+
+    .field-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .field {
+      font-family: "Instrument Sans", sans-serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 0 12px 2px 12px;
+      background: none;
+      color: #000;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .active .field {
+      border: 1px solid rgba(0, 0, 0, 0.5);
+    }
+
+    .field::placeholder {
+      opacity: 0.5;
+      color: #000;
+    }
+
+    .sign,
+    .signed-by {
+      font-family: "JetBrains Mono", monospace;
+      font-optical-sizing: auto;
+      font-style: normal;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .active .signed-by {
+      opacity: 1;
+    }
+
+    .sign {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      height: 44px;
+      border-radius: 12px;
+      padding: 0 14px 2px 12px;
+      background: #000;
+      color: #fff;
+      border: none;
+      opacity: 0.2;
+      transition: 0.2s;
+    }
+
+    .active .sign {
+      opacity: 1;
+    }
+
+    .signature {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .letter-bank {
+      display: none;
+    }
+
+    .signed-by {
+      color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      padding-bottom: 2px;
+      transition: 0.2s ease;
+    }
+
+    .signature-main {
+      display: flex;
+      min-height: 51px;
+      flex-flow: wrap;
+      justify-content: start;
+    }
+
+    .signature-main svg path {
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      stroke-width: 1;
+      stroke: #000;
+      transition: 0.2s stroke-dashoffset;
+    }
+
+    .up,
+    .lo {
+      max-height: 51px;
+    }
+
+    /* letter boxes */
+    .up.a {
+      margin: 0 -10px 0 -7px;
+    }
+
+    .up.b {
+      margin: 0 -5px 0 -13px;
+    }
+
+    .up.c {
+      margin: 0 -5px 0 -6px;
+    }
+
+    .up.d {
+      margin: 0 -6px 0 -6px;
+    }
+
+    .up.e {
+      margin: 0 -10px 0 -8px;
+    }
+
+    .up.f {
+      margin: 0 -13px 0 -5px;
+    }
+
+    .up.g {
+      margin: 0 0px 0 -6px;
+    }
+
+    .up.h {
+      margin: 0 -8px 0 -6px;
+    }
+
+    .up.i {
+      margin: 0 -25px 0 -16px;
+    }
+
+    .up.j {
+      margin: 0 -24px 0 -6px;
+    }
+
+    .up.k {
+      margin: 0 -23px 0 -3px;
+    }
+
+    .up.l {
+      margin: 0 -7px 0 -5px;
+    }
+
+    .up.m {
+      margin: 0 -7px 0 -10px;
+    }
+
+    .up.n {
+      margin: 0 -4px 0 -10px;
+    }
+
+    .up.o {
+      margin: 0 -1px 0 -1px;
+    }
+
+    .up.p {
+      margin: 0 -12px 0 -3px;
+    }
+
+    .up.q {
+      margin: 0 -3px 0 -3px;
+    }
+
+    .up.r {
+      margin: 0 -8px 0 -4px;
+    }
+
+    .up.s {
+      margin: 0 -14px 0 -2px;
+    }
+
+    .up.t {
+      margin: 0 -29px 0 -17px;
+    }
+
+    .up.u {
+      margin: 0 -10px 0 -1px;
+    }
+
+    .up.v {
+      margin: 0 -15px 0 -6px;
+    }
+
+    .up.w {
+      margin: 0 -8px 0 -6px;
+    }
+
+    .up.x {
+      margin: 0 -11px 0 -13px;
+    }
+
+    .up.y {
+      margin: 0 -12px 0 2px;
+    }
+
+    .up.z {
+      margin: 0 -9px 0 -8px;
+    }
+
+    .lo.a {
+      margin: 0 -4px 0 0;
+    }
+
+    .lo.b {
+      margin: 0 -6px 0 -1.5px;
+    }
+
+    .lo.c {
+      margin: 0 -4px 0 0;
+    }
+
+    .lo.d {
+      margin: 0 -11.3px 0 0;
+    }
+
+    .lo.e {
+      margin: 0 -4px 0 0;
+    }
+
+    .lo.f {
+      margin: 0 -6px 0 -6px;
+    }
+
+    .lo.g {
+      margin: 0 -4px 0 -10px;
+    }
+
+    .lo.h {
+      margin: 0 -4px 0 -1px;
+    }
+
+    .lo.i {
+      margin: 0 -3.5px 0 0;
+    }
+
+    .lo.j {
+      margin: 0 -5px 0 -14px;
+    }
+
+    .lo.k {
+      margin: 0 -6.5px 0 0;
+    }
+
+    .lo.l {
+      margin: 0 -12px 0 -4px;
+    }
+
+    .lo.m,
+    .lo.n {
+      margin: 0 -5px 0 0;
+    }
+
+    .lo.o {
+      margin: 0 -2.5px 0 0;
+    }
+
+    .lo.p {
+      margin: 0 -2.5px 0 -10px;
+    }
+
+    .lo.q {
+      margin: 0 -2px 0 -6px;
+    }
+
+    .lo.r {
+      margin: 0 -3px 0 -1px;
+    }
+
+    .lo.s {
+      margin: 0 -4px 0 -4px;
+    }
+
+    .lo.t {
+      margin: 0 -12.5px 0 -3.5px;
+    }
+
+    .lo.u,
+    .lo.v {
+      margin: 0 -4.5px 0 0;
+    }
+
+    .lo.w,
+    .lo.x {
+      margin: 0 -4px 0 0;
+    }
+
+    .lo.y {
+      margin: 0 -4px 0 -9px;
+    }
+
+    .lo.z {
+      margin: 0 -4px 0 -10px;
+    }
+
+    /* letter paths */
+    .up.a path {
+      stroke-dasharray: 190;
+      stroke-dashoffset: 190;
+    }
+
+    .up.b path {
+      stroke-dasharray: 230;
+      stroke-dashoffset: 230;
+    }
+
+    .up.c path {
+      stroke-dasharray: 101;
+      stroke-dashoffset: 101;
+    }
+
+    .up.d path {
+      stroke-dasharray: 194;
+      stroke-dashoffset: 194;
+    }
+
+    .up.e path {
+      stroke-dasharray: 132;
+      stroke-dashoffset: 132;
+    }
+
+    .up.f path {
+      stroke-dasharray: 191;
+      stroke-dashoffset: 191;
+    }
+
+    .up.g path {
+      stroke-dasharray: 145;
+      stroke-dashoffset: 145;
+    }
+
+    .up.h path {
+      stroke-dasharray: 235;
+      stroke-dashoffset: 235;
+    }
+
+    .up.i path {
+      stroke-dasharray: 128;
+      stroke-dashoffset: 128;
+    }
+
+    .up.j path {
+      stroke-dasharray: 174;
+      stroke-dashoffset: 174;
+    }
+
+    .up.k path {
+      stroke-dasharray: 244;
+      stroke-dashoffset: 244;
+    }
+
+    .up.l path {
+      stroke-dasharray: 83;
+      stroke-dashoffset: 83;
+    }
+
+    .up.m path {
+      stroke-dasharray: 176;
+      stroke-dashoffset: 176;
+    }
+
+    .up.n path {
+      stroke-dasharray: 111;
+      stroke-dashoffset: 111;
+    }
+
+    .up.o path {
+      stroke-dasharray: 167;
+      stroke-dashoffset: 167;
+    }
+
+    .up.p path {
+      stroke-dasharray: 203;
+      stroke-dashoffset: 203;
+    }
+
+    .up.q path {
+      stroke-dasharray: 212;
+      stroke-dashoffset: 212;
+    }
+
+    .up.r path {
+      stroke-dasharray: 235;
+      stroke-dashoffset: 235;
+    }
+
+    .up.s path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+
+    .up.t path {
+      stroke-dasharray: 133;
+      stroke-dashoffset: 133;
+    }
+
+    .up.u path {
+      stroke-dasharray: 136;
+      stroke-dashoffset: 136;
+    }
+
+    .up.v path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+
+    .up.w path {
+      stroke-dasharray: 163;
+      stroke-dashoffset: 163;
+    }
+
+    .up.x path {
+      stroke-dasharray: 153;
+      stroke-dashoffset: 153;
+    }
+
+    .up.y path {
+      stroke-dasharray: 162;
+      stroke-dashoffset: 162;
+    }
+
+    .up.z path {
+      stroke-dasharray: 149;
+      stroke-dashoffset: 149;
+    }
+
+    .lo.a path {
+      stroke-dasharray: 36;
+      stroke-dashoffset: 36;
+    }
+
+    .lo.b path {
+      stroke-dasharray: 64;
+      stroke-dashoffset: 64;
+    }
+
+    .lo.c path {
+      stroke-dasharray: 17;
+      stroke-dashoffset: 17;
+    }
+
+    .lo.d path {
+      stroke-dasharray: 73;
+      stroke-dashoffset: 73;
+    }
+
+    .lo.e path {
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+    }
+
+    .lo.f path {
+      stroke-dasharray: 59;
+      stroke-dashoffset: 59;
+    }
+
+    .lo.g path {
+      stroke-dasharray: 75;
+      stroke-dashoffset: 75;
+    }
+
+    .lo.h path {
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+    }
+
+    .lo.i path {
+      stroke-dasharray: 16;
+      stroke-dashoffset: 16;
+    }
+
+    .lo.j path {
+      stroke-dasharray: 59;
+      stroke-dashoffset: 59;
+    }
+
+    .lo.k path {
+      stroke-dasharray: 54;
+      stroke-dashoffset: 54;
+    }
+
+    .lo.l path {
+      stroke-dasharray: 33;
+      stroke-dashoffset: 33;
+    }
+
+    .lo.m path {
+      stroke-dasharray: 43;
+      stroke-dashoffset: 43;
+    }
+
+    .lo.n path {
+      stroke-dasharray: 27;
+      stroke-dashoffset: 27;
+    }
+
+    .lo.o path {
+      stroke-dasharray: 17;
+      stroke-dashoffset: 17;
+    }
+
+    .lo.p path {
+      stroke-dasharray: 67;
+      stroke-dashoffset: 67;
+    }
+
+    .lo.q path {
+      stroke-dasharray: 63;
+      stroke-dashoffset: 63;
+    }
+
+    .lo.r path {
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+    }
+
+    .lo.s path {
+      stroke-dasharray: 32;
+      stroke-dashoffset: 32;
+    }
+
+    .lo.t path {
+      stroke-dasharray: 91;
+      stroke-dashoffset: 91;
+    }
+
+    .lo.u path {
+      stroke-dasharray: 28;
+      stroke-dashoffset: 28;
+    }
+
+    .lo.v path {
+      stroke-dasharray: 17;
+      stroke-dashoffset: 17;
+    }
+
+    .lo.w path {
+      stroke-dasharray: 21;
+      stroke-dashoffset: 21;
+    }
+
+    .lo.x path {
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+    }
+
+    .lo.y path {
+      stroke-dasharray: 70;
+      stroke-dashoffset: 70;
+    }
+
+    .lo.z path {
+      stroke-dasharray: 67;
+      stroke-dashoffset: 67;
+    }
+  </style>
+</head>
+<body>
+  <div class="modal">
+    <div class="field-wrapper">
+      <input autocomplete="off" name="hidden" class="field" maxlength="256" placeholder="Your name" type="text" id="First-name" required="">
+      <button class="sign">
+        <svg width="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.72421 4.666H5.13421C4.86052 4.66592 4.59342 4.75007 4.3692 4.90703C4.14498 5.06398 3.97449 5.28614 3.88088 5.54333L1.37421 12.438C1.28555 12.6813 1.34621 12.954 1.52888 13.1373L1.72421 13.3327L6.00555 9.05133C6.00488 9.034 6.00022 9.01667 6.00022 8.99933C6.00022 8.80155 6.05886 8.60821 6.16875 8.44376C6.27863 8.27932 6.43481 8.15114 6.61753 8.07546C6.80026 7.99977 7.00132 7.97996 7.19531 8.01855C7.38929 8.05713 7.56747 8.15238 7.70732 8.29223C7.84717 8.43208 7.94241 8.61026 7.981 8.80424C8.01959 8.99823 7.99978 9.19929 7.92409 9.38202C7.84841 9.56474 7.72023 9.72092 7.55579 9.8308C7.39134 9.94069 7.198 9.99933 7.00022 9.99933C6.98288 9.99933 6.96555 9.99467 6.94822 9.994L2.66688 14.2753L2.86221 14.4707C2.95185 14.5605 3.06534 14.6228 3.18927 14.6503C3.31319 14.6777 3.44238 14.669 3.56155 14.6253L10.4562 12.118C10.7134 12.0244 10.9356 11.8539 11.0925 11.6297C11.2495 11.4055 11.3336 11.1384 11.3335 10.8647V8.27467L12.6662 6.94267L9.05688 3.33333L7.72421 4.666ZM13.2929 6.04067L9.95955 2.70733L11.3729 1.29333L14.7062 4.62667L13.2929 6.04067Z" fill="white" />
+        </svg>
+        Sign
+      </button>
+    </div>
+
+    <div class="signature">
+      <div class="letter-bank">
+        <div class="a up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 46 51" height="51" width="46">
+            <path d="M14.9987 32.0003C20.8769 23.2406 40.7942 1.02295 44.6176 1.58265C48.4411 2.14235 25.4397 26.0685 19.6688 50.0398C28.2839 11.7157 5.83642 32.6888 1.46688 33.1804C4.63512 27.4831 32.8719 20.946 44.7496 24.6628"></path>
+          </svg>
+        </div>
+        <div class="b up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 47 51" height="51" width="47">
+            <path d="M25.7369 6.82933C16.1889 19.6519 13.2127 26.1056 8.11585 37.5574C21.5374 6.58445 41.1497 1.82882 45.1601 3.92338C52.3423 8.2922 18.8269 29.8371 17.6306 27.2038C16.4343 24.5705 38.5178 23.6728 37.9785 29.4181C36.1831 44.0806 -7.20643 55.631 2.96733 40.4898C7.27648 33.1286 25.3502 33.1885 27.7453 35.702"></path>
+          </svg>
+        </div>
+        <div class="c up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 37 51" height="51" width="37">
+            <path d="M35.1522 7.2324C38.1612 -9.90171 5.01684 18.1833 1.44481 44.1581C-0.863382 60.9427 22.8446 32.2692 28.2295 28.4927"></path>
+          </svg>
+        </div>
+        <div class="d up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 45 51" height="51" width="45">
+            <path d="M26.5606 9.18304C16.6848 26.0062 3.378 46.7523 1.89258 45.5634C-3.1006 40.6888 26.7398 2.16864 41.7793 5.25978C51.1122 6.68653 19.6065 49.6651 9.26293 46.2174C4.62623 44.3152 20.0819 27.7895 31.6737 29.9295"></path>
+          </svg>
+        </div>
+        <div class="e up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 46 51" height="51" width="46">
+            <path d="M38.6505 10.5127C38.6505 10.5127 50.1156 2.77326 42.1993 4.69163C34.283 6.61 7.29611 24.5362 9.21359 27.9759C11.1311 31.4157 26.8097 26.7853 26.8097 26.7853C12.5763 31.9276 -0.576393 42.3963 1.21022 45.8361C2.99682 49.2758 27.2051 38.229 27.2051 38.229"></path>
+          </svg>
+        </div>
+        <div class="f up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 60 51" height="51" width="60">
+            <path d="M3.99414 15.4999C18.0539 7.88344 40.9941 2.5 58.4941 4.49991C15.9941 5.5 23.4941 9 1.49414 47.4999C4.49414 33.5 3.99414 25.5 43.9941 22.9999"></path>
+          </svg>
+        </div>
+        <div class="g up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 40 51" height="51" width="40">
+            <path d="M37.4677 13.6689C40.3847 3.01441 37.7852 1.4925 29.7299 4.91693C7.78844 14.6201 -4.26276 42.3972 4.55267 46.0754C13.3681 49.7537 42.3496 30.9185 34.1686 26.4792C29.0318 23.8791 9.56239 45.1242 14.3821 47.6611"></path>
+          </svg>
+        </div>
+        <div class="h up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 54 51" height="51" width="54">
+            <path d="M35.957 3.99976C23.1235 22.025 18.442 31.2217 10.457 47.4998C26.957 5.99983 30.457 37.5 52.957 7.5C33.957 29.4998 32.957 37.6924 29.457 38.5C25.957 39.3076 0.957031 32.5 0.957031 29.4998C23.1446 22.8906 34.5662 20.6514 50.957 22.4998"></path>
+          </svg>
+        </div>
+        <div class="i up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 49 51" height="51" width="49">
+            <path d="M16.7648 9.03851C21.8129 5.77875 25.3024 4.00811 47.421 2.22626C35.7012 1.49995 34.274 -0.0548382 21.4876 22.9726C8.70118 45.9999 13.2012 40 1.2832 48.9828C3.36519 44.9656 17.2012 40.4999 23.7334 42.0158"></path>
+          </svg>
+        </div>
+        <div class="j up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 53 51" height="51" width="53">
+            <path d="M5.91946 15.5C13.9195 9.49996 30.9194 3.38158 51.4194 4.99996C41.4194 -5.99996 36.9194 7.49985 26.4195 22C15.9195 36.5001 11.9204 40.4999 5.92029 45C-5.57979 53.6248 6.91943 32.5002 18.9197 21.0001C30.9199 9.5 15.9195 31.5 15.9195 31.5"></path>
+          </svg>
+        </div>
+        <div class="k up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 59 51" height="51" width="59">
+            <path d="M30.6585 5.69873C20.8873 19.471 15.4101 28.7219 5.65848 46.1987C22.4604 13.4133 39.6585 11.6987 53.1585 9.69873C64.6585 8.19873 51.1585 20.1987 51.1585 20.1987C80.6585 -7.30127 -1.22332 24.1987 1.15848 37.6987C2.39349 44.6987 37.1585 35.6987 37.1585 35.6987"></path>
+          </svg>
+        </div>
+        <div class="l up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 51" height="51" width="30">
+            <path d="M28.5059 3.6123C19.5058 9.1123 -1.12359 39.6123 1.00666 46.6123C2.22398 50.6123 28.5059 38.6123 28.5059 38.6123"></path>
+          </svg>
+        </div>
+        <div class="m up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 49 51" height="51" width="49">
+            <path d="M1.48242 48.3176C8.1298 31.8088 14.4004 21.838 29.9824 2.81763C29.9824 2.81763 10.9824 34.8176 17.4824 37.8176C22.4824 40.1253 47.4824 9.31763 47.4824 9.31763C34.5795 28.6674 30.1369 37.0839 29.4824 45.8176"></path>
+          </svg>
+        </div>
+        <div class="n up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 45 51" height="51" width="45">
+            <path d="M1.73633 45.7104C2.46255 39.6904 11.2363 23.2104 19.7363 14.2104C17.7363 36.7104 21.3778 43.3814 24.7363 43.2104C28.0949 43.0395 33.0666 31.1917 43.2363 5.21045"></path>
+          </svg>
+        </div>
+        <div class="o up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 34 51" height="51" width="34">
+            <path d="M19.2264 13.6837C12.2264 15.1837 -0.773614 43.6837 6.72639 46.1837C14.2264 48.6837 43.2258 13.6837 28.7272 5.68376C13.2266 -2.86957 -2.2744 33.1838 2.22656 40.6838C6.72753 48.1839 20.7264 29.6837 20.7264 29.6837"></path>
+          </svg>
+        </div>
+        <div class="p up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 52 51" height="51" width="52">
+            <path d="M6.17969 47.4213C13.346 34.4334 17.26 27.7753 26.1804 13.4212C15.6807 22.9212 7.17969 26.4211 1.17969 30.4214C15.1797 10.4213 55.1797 -3.07861 50.1799 7.42125C45.1801 17.9211 24.6017 34.3749 19.6797 37.4214C7.56237 44.9214 28.6797 21.4214 35.1797 24.9213"></path>
+          </svg>
+        </div>
+        <div class="q up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 41 51" height="51" width="41">
+            <path d="M33.1765 13.6025C25.1765 0.102458 -5.32345 39.1026 10.1765 43.6025C21.6765 46.6025 45.4375 13.6025 39.1765 4.60246C31.1766 -6.89746 -5.82409 18.6025 3.17655 31.6024C10.7926 42.6025 22.1589 20.9042 26.1758 27.6025C27.6751 30.1026 27.1751 49.6026 38.6758 44.6025"></path>
+          </svg>
+        </div>
+        <div class="r up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 58 51" height="51" width="58">
+            <path d="M12.0195 45.3685C19.1859 32.3806 23.0999 25.7226 32.0203 11.3685C21.5205 20.8685 5.01953 34.2139 1.01953 30.7139C6.01953 17.2138 71.5195 -7.28639 53.5188 13.7136C43.6613 25.2136 12.0195 41.7136 14.0195 38.2136C37.0871 17.3054 32.9838 44.188 46.7608 39.6997"></path>
+          </svg>
+        </div>
+        <div class="s up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 46 51" height="51" width="46">
+            <path d="M44.435 9.39728C49.435 -5.10286 -4.56457 25.3972 1.43476 32.8973C6.23411 38.8972 25.0605 38.3972 24.4355 40.8972C23.8105 43.3972 10.9355 44.8972 7.93479 42.8973"></path>
+          </svg>
+        </div>
+        <div class="t up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 62 51" height="51" width="62">
+            <path d="M1.31836 20.8976C6.45115 13.0499 39.3184 2.39746 60.3184 4.8976C33.3184 4.8976 36.3184 8.89746 14.3184 46.8976"></path>
+          </svg>
+        </div>
+        <div class="u up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 44 51" height="51" width="44">
+            <path d="M15.1867 11.5769C8.1875 11.5769 -2.81417 40.0769 3.68673 41.0769C10.1876 42.0769 42.6867 5.0769 42.6867 5.0769C42.6867 5.0769 17.1875 43.5769 23.6867 46.5769"></path>
+          </svg>
+        </div>
+        <div class="v up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 41 51" height="51" width="41">
+            <path d="M17.7137 11.0771C1.95501 41.7408 0.214021 47.5771 2.71479 48.0771C5.21556 48.5771 21.7148 24.0771 39.2137 3.07715"></path>
+          </svg>
+        </div>
+        <div class="w up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 57 51" height="51" width="57">
+            <path d="M24.8836 9.06641C19.8837 9.06641 -2.11633 44.0664 1.88364 44.5664C5.88362 45.0664 29.8828 9.06641 32.3836 10.0664C32.3836 12.5664 26.8828 38.0664 33.3836 40.0664C39.8845 42.0664 55.8836 7.06641 55.8836 7.06641"></path>
+          </svg>
+        </div>
+        <div class="x up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 41 51" height="51" width="41">
+            <path d="M39.293 8.5227C23.1329 20.8029 15.0268 30.1783 0.792969 47.5227C20.8836 24.5227 13.5352 35.0227 14.293 2.02271C13.7765 24.514 15.5889 33.6064 19.293 49.0227"></path>
+          </svg>
+        </div>
+        <div class="y up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 35 51" height="51" width="35">
+            <path d="M16.8032 1.3594C12.7184 0.602171 -1.69718 28.9308 2.30381 28.3593C6.30481 27.7879 33.8032 2.8594 33.8032 2.8594C14.0741 30.0733 5.30273 48.8594 8.80324 49.8594C12.3037 50.8594 30.3027 19.8594 6.80324 39.8594"></path>
+          </svg>
+        </div>
+        <div class="z up">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 55 51" height="51" width="55">
+            <path d="M18.4364 13.4383C15.9364 8.93822 51.9364 -1.5618 53.9364 4.43828C55.9364 10.4384 13.9362 25.9382 1.93593 44.4382C-5.52379 55.9382 31.4361 37.9382 38.9364 36.9383"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="signed-by">Signed by,</div>
+      <div class="signature-main"></div>
+    </div>
+  </div>
+
+  <script>
+    const name = document.querySelector('#First-name');
+    const sign = document.querySelector('.signature-main');
+    const uppercase = document.querySelectorAll('.letter-bank .up');
+    const lowercase = document.querySelectorAll('.letter-bank .lo');
+    const signedBy = document.querySelector('.signed-by');
+    const modal = document.querySelector('.modal');
+    const passwords = ['pass1', 'pass2', 'pass3', 'pass4', 'pass5']; // Predefined password list
+
+    name.addEventListener("keydown", (event) => {
+      if ((event.code === `Key${event.key.toUpperCase()}`) || (event.code == 'Space')) {
+        var key = event.key;
+        draw(key, true);
+      } else if (event.code == 'Backspace') {
+        setTimeout(function () {
+          var value = name.value;
+          sign.innerHTML = '';
+          var letters = value.split('');
+          letters.forEach((item, i) => {
+            draw(item, false);
+          });
+        }, 50);
+      }
+      setTimeout(function () {
+        if (!name.value) {
+          modal.classList.remove('active');
+        } else {
+          modal.classList.add('active');
+        }
+      }, 50);
+    });
+
+    document.querySelector('.sign').addEventListener('click', handleSign);
+    name.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        handleSign(); // Call the handleSign function when Enter is pressed
+      }
+    });
+
+    function handleSign() {
+      const enteredPassword = name.value; // Get the value from the input field
+      if (passwords.includes(enteredPassword)) { // Check if the entered password is in the list
+        window.location.href = 'https://jarvisaipro.github.io/'; // Redirect to the specified URL
+      } else {
+        alert('Incorrect password. Please try again.'); // Alert for incorrect password
+      }
+    }
+
+    function draw(key, animate) {
+      if (key == " ") {
+        const space = document.createElement("div");
+        space.style.minWidth = '12px';
+        sign.appendChild(space);
+      } else {
+        const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i));
+
+        for (i = 0; i < alphabet.length; i++) {
+          var item = alphabet[i];
+
+          if (key.toLowerCase() == item) {
+            const letter = document.createElement("div");
+            if (key == item.toUpperCase()) {
+              letter.innerHTML = uppercase[i].innerHTML;
+              letter.classList.add('up');
+            } else {
+              letter.innerHTML = lowercase[i].innerHTML;
+              letter.classList.add('lo');
+            }
+            letter.classList.add(item);
+            if (animate) {
+              setTimeout(function () {
+                letter.querySelector('svg path').style.strokeDashoffset = '0';
+              }, 50);
+            } else {
+              letter.querySelector('svg path').style.strokeDashoffset = '0';
+            }
+            sign.appendChild(letter);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
